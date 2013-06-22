@@ -1,0 +1,7 @@
+# Ehbot
+
+Le bot qui permet d'avoir des notifications de commits toutes les 30 minutes.
+
+Faire attention aux configs en début de fichier.
+
+ATTENTION : Il faut avoir installé pyxmpp sur le serveur pour pouvoir utiliser ce bot !
