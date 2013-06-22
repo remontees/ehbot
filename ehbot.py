@@ -81,7 +81,7 @@ cl.send(p)
 i = 1
 
 while i == 1:
-    httpServ = httplib.HTTPSConnection('https://git.eliteheberg.fr', 80, timeout=10)
+    httpServ = httplib.HTTPSConnection('https://git.eliteheberg.fr', 443, timeout=10)
     httpServ.connect()
     
     # Vérifier id repository
