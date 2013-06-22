@@ -89,6 +89,12 @@ while i == 1:
     response = httpServ.getresponse()
     if response.status == httplibOk:
         data = response.read()
+        data = json.load(data)
+        for ligne in data
+            if fix == 1:
+                data = ligne
+            
+            fix = fix + 1
 
     #envoi du message
     if id_ancien == data['id']:
