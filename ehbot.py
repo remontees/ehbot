@@ -7,7 +7,7 @@ import time,os
 import json
 
 # définition des constantes
-CLE_API = 'blablabla'
+CLE_API = 'prendrecelledegitlab'
 JID_EHBOT = 'ehbot@eliteheberg.fr'
 PASSWORD_EHBOT = 'toto'
 
