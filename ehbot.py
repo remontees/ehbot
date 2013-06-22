@@ -1,7 +1,7 @@
 #!/usr/bin/python3.2
 # -*-coding:Utf-8 -*
 
-import httplib
+import http.client
 from xmpp import *
 import time,os
 import json
@@ -10,9 +10,6 @@ import json
 CLE_API = 'blablabla'
 JID_EHBOT = 'ehbot@eliteheberg.fr'
 PASSWORD_EHBOT = 'toto'
-
-httpServ = httplib.HTTPConnection('http://eliteheberg.fr', 22)
-httpServ.connect()
 
 # Connection au JID de ehbot
 BOT=(JID_EHBOT, PASSWORD_EHBOT)
@@ -81,7 +78,8 @@ p.setTag('x',namespace=NS_MUC).setTagData('password',CONF[1])
 p.getTag('x').addChild('history',{'maxchars':'0','maxstanzas':'0'})
 cl.send(p)
 
-while i = 1:
+while i == 1:
+    httpServ = http.client.HTTPConnection('http://www.eliteheberg.fr')
     # Vérifier id repository
     httpServ.request('GET', '/projects/2/repository/commits?private_token=' + CLE_API)
     response = httpServ.getresponse()
@@ -96,6 +94,9 @@ while i = 1:
             message  = 'Impossible de se connecter au serveur GIT.'
         cl.send(Message('eliteheberg@muc.eliteheberg.fr', message, typ='groupchat'))
     
+    # on referme la connexion
+    httpServ.close()
+    
     # on attend 30 minutes avant de faire une autre vérification
-    time.sleep(1800)
+    time.sleep(120)
     id_ancien = data['id']
