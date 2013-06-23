@@ -41,12 +41,13 @@ while i == 1:
     response, content = httpServ.request('https://git.eliteheberg.fr/api/v3/projects/' + PROJECT + '/repository/commits?private_token=' + CLE_API, "GET")
     if response.status == 200:
         data = json.loads(content)
+        last_commit = None
         increment = 0
         for ligne in data:
-            if (increment == 0):
-                message = 'Nouveau commit de ' + ligne['author_name'] + ' : ' + ligne['title'] + ' - https://git.eliteheberg.fr/' + PROJECT_OWNER + '/' + PROJECT_TITLE + '/commit/' + ligne['id']
+            if (increment == 0 and last_commit != ligne['id']):
+                message = 'Nouveau commit de ' + ligne['author_name'] + ' : ' + ligne['title'].decode('utf-8') + ' - https://git.eliteheberg.fr/' + PROJECT_OWNER + '/' + PROJECT_TITLE + '/commit/' + ligne['id']
                 cl.send(Message('eliteheberg@muc.eliteheberg.fr', message, typ='groupchat'))
-                premier = ligne['id']
+                last_commit = ligne['id']
                 increment = increment + 1
             else:
                 break
