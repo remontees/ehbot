@@ -5,8 +5,9 @@ import httplib2
 from xmpp import *
 import time,os
 import json
+import HTMLParser
 
-# dÃ©finition des constantes
+# définition des constantes
 CLE_API = 'npB5qGysrKQsY5vRp9Vn'
 JID_EHBOT = 'ehbot@eliteheberg.fr'
 PASSWORD_EHBOT = 'toto'
@@ -35,20 +36,32 @@ p.setTag('x',namespace=NS_MUC).setTagData('password',CONF[1])
 p.getTag('x').addChild('history',{'maxchars':'0','maxstanzas':'0'})
 cl.send(p)
 
-i = 1
-while i == 1:
+nb_tours = 0
+last_commit = None
+
+# Instanciation du parser HTML
+html_parser = HTMLParser.HTMLParser()
+
+while nb_tours >= 0:
     httpServ = httplib2.Http(disable_ssl_certificate_validation=True)
     response, content = httpServ.request('https://git.eliteheberg.fr/api/v3/projects/' + PROJECT + '/repository/commits?private_token=' + CLE_API, "GET")
     if response.status == 200:
         data = json.loads(content)
-        last_commit = None
         increment = 0
         for ligne in data:
             if (increment == 0 and last_commit != ligne['id']):
-                message = 'Nouveau commit de ' + ligne['author_name'] + ' : ' + ligne['title'].decode('utf-8') + ' - https://git.eliteheberg.fr/' + PROJECT_OWNER + '/' + PROJECT_TITLE + '/commit/' + ligne['id']
+                if nb_tours == 0:
+                    message = 'Dernier commit'
+                else:
+                    message = 'Nouveau commit'
+                
+                message += ' de ' + ligne['author_name'] + ' : ' + html_parser.unescape(ligne['title']) + ' - https://git.eliteheberg.fr/' + PROJECT_OWNER + '/' + PROJECT_TITLE + '/commit/' + ligne['id']
+                    
                 cl.send(Message('eliteheberg@muc.eliteheberg.fr', message, typ='groupchat'))
                 last_commit = ligne['id']
                 increment = increment + 1
             else:
                 break
+        
+        nb_tours = nb_tours + 1
         time.sleep(60)
