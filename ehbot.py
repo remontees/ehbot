@@ -37,17 +37,34 @@ cl.send(p)
 
 knownCommits = []
 
+#premier passage on regarde tous les commits et on garde le premier
+premier = ''
+httpServ = httplib2.Http(disable_ssl_certificate_validation=True)
+response, content = httpServ.request('https://git.eliteheberg.fr/api/v3/projects/' + PROJECT + '/repository/commits?private_token=' + CLE_API, "GET")
+if response.status == 200:
+    data = json.loads(content)
+    for ligne in data:
+        if premier == '':
+            premier = ligne['id']
+        #informer le dernier commit
+	    message = 'Dernier commit par: ' + ligne['author_name'] + ' : ' + ligne['title'] + ' - https://git.eliteheberg.fr/' + PROJECT_OWNER + '/' + PROJECT_TITLE + '/commit/' + ligne['id']
+            cl.send(Message('eliteheberg@muc.eliteheberg.fr', message, typ='groupchat'))
+        if not any(ligne['id'] in item for item in knownCommits):
+            knownCommits.append(ligne['id'])
+
 i = 1
-
 while i == 1:
-        httpServ = httplib2.Http(disable_ssl_certificate_validation=True)
-        response, content = httpServ.request('https://git.eliteheberg.fr/api/v3/projects/' + PROJECT + '/repository/commits?private_token=' + CLE_API, "GET")
-        if response.status == 200:
-                data = json.loads(content)
-                for ligne in data:
-                        if not any(ligne['id'] in item for item in knownCommits):
-                                knownCommits.append(ligne['id'])
+	httpServ = httplib2.Http(disable_ssl_certificate_validation=True)
+	response, content = httpServ.request('https://git.eliteheberg.fr/api/v3/projects/' + PROJECT + '/repository/commits?private_token=' + CLE_API, "GET")
+	if response.status == 200:
+		data = json.loads(content)
+		for ligne in data:
+			if (ligne['id'] != premier):
+				knownCommits.append(ligne['id'])
 
-                                message = 'Commit de ' + ligne['author_name'] + ' : ' + ligne['title'] + ' - https://git.eliteheberg.fr/' + PROJECT_OWNER + $
-                                cl.send(Message('eliteheberg@muc.eliteheberg.fr', message, typ='groupchat'))
-        time.sleep(120)
+				message = 'Nouveau commit de ' + ligne['author_name'] + ' : ' + ligne['title'] + ' - https://git.eliteheberg.fr/' + PROJECT_OWNER + '/' + PROJECT_TITLE + '/commit/' + ligne['id']
+				cl.send(Message('eliteheberg@muc.eliteheberg.fr', message, typ='groupchat'))
+				premier = ligne['id']
+			else:
+				break
+	time.sleep(120)
