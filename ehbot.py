@@ -8,17 +8,21 @@ import json
 import HTMLParser
 
 # définition des constantes
-CLE_API = 'npB5qGysrKQsY5vRp9Vn'
-JID_EHBOT = 'ehbot@eliteheberg.fr'
-PASSWORD_EHBOT = 'toto'
+CLE_API = ''
+JID_EHBOT = ''
+PASSWORD_EHBOT = ''
 
-PROJECT = '5'
-PROJECT_TITLE = 'ehbot'
-PROJECT_OWNER = 'remontees'
+PROJECT = ''
+PROJECT_TITLE = ''
+PROJECT_OWNER = ''
+
+MUC_SEND = ''
+URL_SERVER = ''
+
 
 # Connection au JID de ehbot
 BOT=(JID_EHBOT, PASSWORD_EHBOT)
-CONF=('eliteheberg@muc.eliteheberg.fr','')
+CONF=(MUC_SEND,'')
 LOGDIR='./'
 PROXY={}
 
@@ -44,7 +48,7 @@ html_parser = HTMLParser.HTMLParser()
 
 while nb_tours >= 0:
     httpServ = httplib2.Http(disable_ssl_certificate_validation=True)
-    response, content = httpServ.request('https://git.eliteheberg.fr/api/v3/projects/' + PROJECT + '/repository/commits?private_token=' + CLE_API, "GET")
+    response, content = httpServ.request(URL_SERVER + '/api/v3/projects/' + PROJECT + '/repository/commits?private_token=' + CLE_API, "GET")
     if response.status == 200:
         data = json.loads(content)
         increment = 0
@@ -55,9 +59,9 @@ while nb_tours >= 0:
                 else:
                     message = 'Nouveau commit'
                 
-                message += ' de ' + ligne['author_name'] + ' : ' + html_parser.unescape(ligne['title']) + ' - https://git.eliteheberg.fr/' + PROJECT_OWNER + '/' + PROJECT_TITLE + '/commit/' + ligne['id']
+                message += ' de ' + ligne['author_name'] + ' : ' + html_parser.unescape(ligne['title']) + ' - ' + URL_SERVER + '/' + PROJECT_OWNER + '/' + PROJECT_TITLE + '/commit/' + ligne['id']
                     
-                cl.send(Message('eliteheberg@muc.eliteheberg.fr', message, typ='groupchat'))
+                cl.send(Message('MUC_SEND', message, typ='groupchat'))
                 last_commit = ligne['id']
                 increment = increment + 1
             else:
