@@ -57,10 +57,9 @@ while nb_tours >= 0:
     if response.status == 200:
         data = json.loads(content)
         data2 = json.loads(content2)
-        increment = 0
-        increment2 = 0
+
         for ligne in data:
-            if (increment == 0 and last_commit != ligne['id']):
+            if (ligne == data[0] and last_commit != ligne['id']):
                 if nb_tours == 0:
                     message = 'Dernier commit'
                 else:
@@ -70,13 +69,13 @@ while nb_tours >= 0:
                     
                 cl.send(Message('MUC_SEND', message, typ='groupchat'))
                 last_commit = ligne['id']
-                increment = increment + 1
+
             else:
                 break
         
         for ligne2 in data2:
-            if (increment2 == 0 and last_commit2 != ligne2['id']):
-                if nb_tours2 == 0:
+            if (ligne2 == data2[0] and last_commit2 != ligne2['id']):
+                if nb_tours == 0:
                     message2 = 'Dernier commit'
                 else:
                     message2 = 'Nouveau commit'
@@ -85,9 +84,9 @@ while nb_tours >= 0:
                     
                 cl.send(Message('MUC_SEND', message2, typ='groupchat'))
                 last_commit2 = ligne2['id']
-                increment2 = increment2 + 1
+
             else:
                 break
-        
+                
         nb_tours = nb_tours + 1
         time.sleep(60)
